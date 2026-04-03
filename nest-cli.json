@@ -3,6 +3,39 @@
   "collection": "@nestjs/schematics",
   "sourceRoot": "src",
   "compilerOptions": {
-    "deleteOutDir": true
+    "builder": {
+      "type": "swc",
+      "options": {
+        "swcrcPath": ".swcrc.json"
+      }
+    },
+    "deleteOutDir": true,
+    "assets": [
+      {
+        "include": "locales/**/*.json",
+        "watchAssets": true,
+        "outDir": "dist"
+      },
+      {
+        "include": "services/**/*.pug",
+        "watchAssets": true,
+        "outDir": "dist"
+      },
+      {
+        "include": "db/seeder/seed-data/**/*",
+        "watchAssets": true,
+        "outDir": "dist"
+      },
+      {
+        "include": "db/stored-procedures/**/*.sql",
+        "watchAssets": true,
+        "outDir": "dist"
+      },
+      {
+        "include": "db/functions/*.sql",
+        "watchAssets": true,
+        "outDir": "dist"
+      }
+    ]
   }
 }

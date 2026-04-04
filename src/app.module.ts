@@ -1,11 +1,9 @@
 import { Module } from '@nestjs/common';
 
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
+import { AuthModule } from './features/auth/app.module';
+import { BaseGraphQLModule } from './module/graphql';
 
 @Module({
-  controllers: [AppController],
-  imports: [],
-  providers: [AppService],
+  imports: [BaseGraphQLModule.forFeatureModules([AuthModule])],
 })
 export class AppModule {}

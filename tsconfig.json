@@ -1,25 +1,30 @@
 {
   "compilerOptions": {
-    "types": ["jest"],
-    "module": "nodenext",
-    "moduleResolution": "nodenext",
-    "resolvePackageJsonExports": true,
+    "target": "es2022",
+    "strict": true,
     "esModuleInterop": true,
-    "isolatedModules": true,
-    "declaration": true,
-    "removeComments": true,
-    "emitDecoratorMetadata": true,
-    "experimentalDecorators": true,
-    "allowSyntheticDefaultImports": true,
-    "target": "ES2023",
-    "sourceMap": true,
-    "outDir": "./dist",
-    "incremental": true,
     "skipLibCheck": true,
-    "strictNullChecks": true,
     "forceConsistentCasingInFileNames": true,
-    "noImplicitAny": false,
-    "strictBindCallApply": false,
-    "noFallthroughCasesInSwitch": false
-  }
+    "resolveJsonModule": true,
+    "declaration": true,
+    "sourceMap": true,
+    "sourceRoot": "src",
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "importHelpers": true,
+    "strictPropertyInitialization": false,
+    "strictNullChecks": true,
+    "noImplicitAny": true,
+    "noImplicitThis": false,
+    "useUnknownInCatchVariables": false,
+    "lib": ["es2022"],
+
+    "module": "commonjs",
+    "outDir": "./dist",
+    "paths": {
+      "@/*": ["./src/*"]
+    },
+    "types": ["node", "./types/utility.d.ts", "jest"]
+  },
+  "exclude": ["node_modules", "dist"]
 }

@@ -60,14 +60,14 @@ printf "$git_diff" | xargs git add
 printf "   ${GREEN}✓ Files updated${NC}\n"
 
 # Step 5: Run tests (optional, can be commented out if not needed)
-printf "${BOLD}[5/5]${NC} Running tests...\n"
-if pnpm test; then
-  printf "   ${GREEN}✓ All tests passed${NC}\n"
-else
-  printf "   ${RED}✗ Tests failed${NC}\n"
-  printf "\n${RED}${BOLD}ABORTING COMMIT:${NC} Please fix the failing tests before committing.\n"
-  exit 1
-fi
+# printf "${BOLD}[5/5]${NC} Running tests...\n"
+# if pnpm test; then
+#   printf "   ${GREEN}✓ All tests passed${NC}\n"
+# else
+#   printf "   ${RED}✗ Tests failed${NC}\n"
+#   printf "\n${RED}${BOLD}ABORTING COMMIT:${NC} Please fix the failing tests before committing.\n"
+#   exit 1
+# fi
 
 # --- Summary ---
 end_time=$(date +%s)

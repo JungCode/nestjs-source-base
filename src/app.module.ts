@@ -1,9 +1,10 @@
 import { Module } from '@nestjs/common';
 
 import { AuthModule } from './features/auth/app.module';
-import { BaseGraphQLModule } from './module/graphql';
+import { BaseGraphQLModule } from './common/module/graphql';
+import { DatabaseModule } from './common/module/database/database.module';
 
 @Module({
-  imports: [BaseGraphQLModule.forFeatureModules([AuthModule])],
+  imports: [DatabaseModule, BaseGraphQLModule.forFeatureModules([AuthModule])],
 })
 export class AppModule {}

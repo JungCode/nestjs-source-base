@@ -1,3 +1,5 @@
+import 'dotenv/config';
+
 export const config = {
   apiKey: {
     internalApiKey: process.env.INTERNAL_API_KEY || '',

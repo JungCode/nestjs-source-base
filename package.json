@@ -12,6 +12,12 @@
     "start:dev": "nest start --watch",
     "start:debug": "nest start --debug --watch",
     "start:prod": "node dist/main",
+    "migration:create": "cd ./src/db/migrations && ts-node -r tsconfig-paths/register -r dotenv/config ../../../node_modules/typeorm/cli migration:create",
+    "migration:generate": "TYPEORM_CLI=true dotenv -- pnpm typeorm:cli migration:generate",
+    "migration:revert": "TYPEORM_CLI=true dotenv -- pnpm typeorm:cli migration:revert",
+    "migration:run": "TYPEORM_CLI=true dotenv -- pnpm typeorm:cli migration:run",
+    "migration:show": "TYPEORM_CLI=true dotenv -- pnpm typeorm:cli migration:show",
+    "migration:dist:run": "TYPEORM_CLI=true node -r dotenv/config node_modules/typeorm/cli.js migration:run -d dist/db/data-source.js",
     "check-types": "NODE_OPTIONS=--max-old-space-size=16384 tsgo --noEmit --pretty",
     "prettier:staged": "git diff --cached --name-only --diff-filter=ACM | grep -E '\\.(js|ts|jsx|tsx)$' | xargs -r prettier --write",
     "lint-staged": "git diff --cached --name-only --diff-filter=ACM | grep -E '\\.(js|ts|jsx|tsx)$' | xargs -r eslint --fix",
@@ -21,7 +27,8 @@
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
-    "prepare": "husky"
+    "prepare": "husky",
+    "typeorm:cli": "cd ./src/db/migrations && ts-node -P ../../../tsconfig.json -r tsconfig-paths/register ../../../node_modules/typeorm/cli -d ../data-source.ts"
   },
   "dependencies": {
     "@apollo/server": "^5.5.0",
@@ -32,17 +39,21 @@
     "@nestjs/graphql": "^13.2.4",
     "@nestjs/platform-express": "^11.0.1",
     "@nestjs/platform-fastify": "^11.1.18",
+    "@nestjs/typeorm": "^11.0.1",
     "@typescript/native-preview": "7.0.0-dev.20260403.1",
     "class-validator": "^0.15.1",
     "dayjs": "^1.11.20",
     "decimal.js": "^10.6.0",
+    "dotenv": "^17.4.0",
     "graphql": "^16.13.2",
     "graphql-scalars": "^1.25.0",
     "moment-timezone": "^0.6.1",
+    "pg": "^8.20.0",
     "reflect-metadata": "^0.2.2",
     "rxjs": "^7.8.1",
     "tslib": "^2.8.1",
-    "typeorm": "^0.3.28"
+    "typeorm": "^0.3.28",
+    "typeorm-naming-strategies": "^4.1.0"
   },
   "devDependencies": {
     "@commitlint/cli": "^20.5.0",
@@ -58,6 +69,7 @@
     "@types/jest": "^30.0.0",
     "@types/node": "^24.0.0",
     "@types/supertest": "^7.0.0",
+    "dotenv-cli": "^11.0.0",
     "eslint": "^9.18.0",
     "eslint-config-next": "16.1.6",
     "eslint-config-prettier": "^10.0.1",

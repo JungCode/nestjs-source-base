@@ -1,4 +1,3 @@
-import { Definition, Property } from '@/common/decorators/graphql-query-core';
 import { Field, ObjectType } from '@nestjs/graphql';
 import { GraphQLUUID } from 'graphql-scalars';
 import {
@@ -10,6 +9,8 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+
+import { Definition, Property } from '@/common/decorators/graphql-query-core';
 
 @Definition()
 @Entity()

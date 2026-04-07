@@ -1,4 +1,3 @@
-/* eslint-disable unicorn/no-array-reduce */
 export const setValueToArrayMap = <K, T>(
   map: Map<K, T[]>,
   key: K,

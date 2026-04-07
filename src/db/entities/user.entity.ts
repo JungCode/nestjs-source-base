@@ -1,14 +1,14 @@
 import { ObjectType } from '@nestjs/graphql';
-import { Column, Entity, OneToMany, Relation } from 'typeorm';
+import { Column, Entity } from 'typeorm';
 
 import { BaseEntity } from '../base-entities';
 
 @Entity('tags')
 @ObjectType()
 export class Tag extends BaseEntity {
-  @Column({ type: 'varchar', length: 30, nullable: false })
+  @Column({ length: 30, nullable: false, type: 'varchar' })
   title: string;
 
-  @Column({ type: 'varchar', length: 30, nullable: false })
+  @Column({ length: 30, nullable: false, type: 'varchar' })
   colorCode: string;
 }

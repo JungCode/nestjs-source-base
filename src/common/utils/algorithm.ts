@@ -1,4 +1,3 @@
-/* eslint-disable unicorn/no-array-reduce */
 import { Decimal } from 'decimal.js';
 
 export function getRandomNumber(length: number): string {
@@ -14,7 +13,6 @@ export function groupBy<T, K extends string | number | symbol>(
   array: T[],
   keySelector: (item: T) => K,
 ): GroupByResult<T, K> {
-  // eslint-disable-next-line unicorn/no-array-reduce
   return array.reduce<GroupByResult<T, K>>(
     (result, item) => {
       const key = keySelector(item);

@@ -5,6 +5,7 @@ import { dataSourceConfig } from '@/db/data-source';
 
 @Global()
 @Module({
+  exports: [TypeOrmModule],
   imports: [
     TypeOrmModule.forRoot({
       ...dataSourceConfig,
@@ -18,6 +19,5 @@ import { dataSourceConfig } from '@/db/data-source';
       useExisting: getDataSourceToken(dataSourceConfig),
     },
   ],
-  exports: [TypeOrmModule],
 })
 export class DatabaseModule {}

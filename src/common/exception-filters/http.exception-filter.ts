@@ -75,7 +75,7 @@ export class HttpExceptionFilter implements GqlExceptionFilter {
 
     const contextType = host.getType();
 
-    // Nếu request đến từ REST (REST API)
+    // If the request came from REST (REST API)
     if (contextType === 'http') {
       const response = host.switchToHttp().getResponse();
       return response.status(statusCode).send({
@@ -85,7 +85,7 @@ export class HttpExceptionFilter implements GqlExceptionFilter {
       });
     }
 
-    // Nếu request đến từ GraphQL
+    // If the request came from GraphQL
     return new GraphQLError(message, { extensions });
   }
 }

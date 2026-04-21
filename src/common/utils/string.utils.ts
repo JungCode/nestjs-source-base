@@ -154,8 +154,10 @@ export function formatMoney(amount: number): string {
   });
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function getEnumKeyByValue<T extends Record<any, any>>(
   enumObject: T,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   value: any,
 ): keyof T | undefined {
   return (Object.keys(enumObject) as Array<keyof T>).find(

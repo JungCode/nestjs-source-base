@@ -10,6 +10,7 @@ export const isNil = <T>(
 export const isNumericString = (value: string): boolean =>
   !Number.isNaN(Number(value)) && value !== '';
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const normalizeValue = (value: any): string | null => {
   if (isNil(value) || value.toString().trim() === '') {
     return null;

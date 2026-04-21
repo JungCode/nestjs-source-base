@@ -8,6 +8,7 @@ import {
 import type { GqlExceptionFilter } from '@nestjs/graphql';
 import type { GraphQLFormattedError } from 'graphql';
 import { GraphQLError } from 'graphql';
+import { QueryFailedError } from 'typeorm';
 
 import { APP_ENV } from '@/common/constants';
 import { config } from '@/config';
@@ -23,64 +24,96 @@ const DEFAULT_ERROR_CODES: Record<number, string> = {
   500: 'INTERNAL_SERVER_ERROR',
 };
 
+const PG_ERROR_CODES: Record<string, { code: string; status: number }> = {
+  '23502': { code: 'BAD_REQUEST', status: HttpStatus.BAD_REQUEST }, // not null violation
+  '23503': { code: 'CONFLICT', status: HttpStatus.CONFLICT }, // foreign key violation
+  '23505': { code: 'CONFLICT', status: HttpStatus.CONFLICT }, // unique violation
+};
+
 interface GraphQLExtensions {
   code: string;
+  messages: string[];
   originalError?: HttpException | Error;
   statusCode: number;
 }
 
-const defaultInternalServerError: string = 'Something went wrong';
+const defaultInternalServerError = 'Something went wrong';
 
-interface GraphQLExtensions {
-  code: string;
-  originalError?: HttpException | Error;
-  statusCode: number;
-}
-
-@Catch(HttpException)
+@Catch()
 export class HttpExceptionFilter implements GqlExceptionFilter {
-  catch(exception: HttpException, host: ArgumentsHost) {
-    let message: string;
-    let statusCode: number;
-    let code: string;
+  catch(
+    exception: HttpException | QueryFailedError | Error,
+    host: ArgumentsHost,
+  ) {
+    let message: string = defaultInternalServerError;
+    let messages: string[] = [];
+    let statusCode: number = HttpStatus.INTERNAL_SERVER_ERROR;
+    let code: string = DEFAULT_ERROR_CODES[HttpStatus.INTERNAL_SERVER_ERROR];
 
     if (exception instanceof HttpException) {
       const response = exception.getResponse();
 
       if (typeof response === 'object') {
-        message =
+        const rawMessage =
           response['message' as keyof typeof response] ?? exception.message;
 
-        // Process default message of ValidationPipe in NestJS
-        message = Array.isArray(message) ? message.join('\n') : message;
+        // ✅ always init messages early
+        messages = Array.isArray(rawMessage) ? rawMessage : [rawMessage];
+        message = messages[0];
         code = response['code' as keyof typeof response];
       } else {
         message = response;
+        messages = [response];
       }
 
       statusCode = exception.getStatus();
+    } else if (exception instanceof QueryFailedError) {
+      // ✅ Handle TypeORM DB errors (safety net khi race condition)
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const pgCode = (exception.driverError as any)?.code as string;
+      const pgError = PG_ERROR_CODES[pgCode];
+
+      if (pgError) {
+        statusCode = pgError.status;
+        code = pgError.code;
+
+        // Extract field name from detail: "Key (email)=(t@gmail.com) already exists."
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const detail = (exception.driverError as any)?.detail as string;
+        const match = detail?.match(/Key \((.+?)\)=/);
+        message = match
+          ? `${match[1]} already exists`
+          : 'Resource already exists';
+        messages = [message];
+      } else {
+        message = defaultInternalServerError;
+        messages = [message];
+      }
     } else {
       message = defaultInternalServerError;
-      statusCode = HttpStatus.INTERNAL_SERVER_ERROR;
+      messages = [message];
     }
 
     message = message?.replaceAll(/^(\w+\.)+(\w+)/g, '$2');
+    messages = messages.map((m) => m?.replaceAll(/^(\w+\.)+(\w+)/g, '$2'));
     code ??= DEFAULT_ERROR_CODES[statusCode];
 
     const extensions = {
       code,
+      messages,
       originalError: exception,
       statusCode,
     } satisfies GraphQLExtensions;
 
     const contextType = host.getType();
 
-    // If the request came from REST (REST API)
+    // If the request came from REST
     if (contextType === 'http') {
       const response = host.switchToHttp().getResponse();
       return response.status(statusCode).send({
         code,
         message,
+        messages,
         statusCode,
       });
     }
@@ -106,6 +139,7 @@ export const graphqlFormatError = (error: GraphQLFormattedError) => {
           ? {
               code: error.extensions.code,
               message: defaultInternalServerError,
+              messages: [defaultInternalServerError],
               statusCode: error.extensions.statusCode,
             }
           : error;
@@ -132,6 +166,7 @@ export const graphqlFormatError = (error: GraphQLFormattedError) => {
     return {
       code: extensions.code,
       message: defaultInternalServerError,
+      messages: [defaultInternalServerError],
       statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
     };
   }
@@ -139,6 +174,7 @@ export const graphqlFormatError = (error: GraphQLFormattedError) => {
   return {
     code: extensions.code,
     message: error.message,
+    messages: extensions.messages ?? [error.message],
     statusCode,
   };
 };

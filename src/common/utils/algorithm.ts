@@ -46,6 +46,7 @@ export function roundNumberWithNDecimals(
   return Math.round(value * tenToN) / tenToN;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function hasAnyFieldValue<T extends Record<string, any>>(
   object: T,
   fields: (keyof T)[],

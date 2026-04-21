@@ -6,9 +6,11 @@ import type { DynamicModule, Type } from '@nestjs/common';
 import { GraphQLModule } from '@nestjs/graphql';
 
 import { APP_ENV } from '@/common/constants';
+import { graphqlFormatError } from '@/common/exception-filters';
 import { config } from '@/config';
 
 export class BaseGraphQLModule {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   static forFeatureModules(features: Type<any>[]): DynamicModule {
     return {
       imports: [
@@ -16,6 +18,7 @@ export class BaseGraphQLModule {
           driver: ApolloDriver,
           useFactory: () => ({
             autoSchemaFile: true,
+            formatError: graphqlFormatError,
 
             // ------ GraphQL Playground ------
             playground: false,

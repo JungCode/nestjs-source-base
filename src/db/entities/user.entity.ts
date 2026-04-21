@@ -1,14 +1,26 @@
-import { ObjectType } from '@nestjs/graphql';
+import { Field, ObjectType } from '@nestjs/graphql';
 import { Column, Entity } from 'typeorm';
 
 import { BaseEntity } from '../base-entities';
 
-@Entity('tags')
+@Entity('users')
 @ObjectType()
-export class Tag extends BaseEntity {
-  @Column({ length: 30, nullable: false, type: 'varchar' })
-  title: string;
+export class User extends BaseEntity {
+  @Field(() => String)
+  @Column({ length: 100, nullable: false, type: 'varchar', unique: true })
+  email: string;
 
-  @Column({ length: 30, nullable: false, type: 'varchar' })
-  colorCode: string;
+  @Column({ nullable: false, type: 'varchar' })
+  password: string;
+
+  @Field(() => String)
+  @Column({ length: 50, nullable: false, type: 'varchar' })
+  userName: string;
+
+  @Column({ nullable: true, type: 'text' })
+  refreshToken: string | null;
+
+  @Field(() => String, { nullable: true })
+  @Column({ nullable: true, type: 'varchar' })
+  avatarKey: string;
 }
